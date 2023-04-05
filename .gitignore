@@ -109,6 +109,9 @@ dist
 /.pnp
 .pnp.js
 
+#Editors
+.vscode/
+
 # testing
 /coverage
 

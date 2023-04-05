@@ -1,0 +1,76 @@
+.Toolbar {
+    background-color: #ffffff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    width: calc(100% - 10px);
+    height: auto;
+    min-height: 40px;
+    max-height: 150px;
+    border-bottom: 2px solid rgb(238, 238, 238);
+    padding: 5px 5px 5px 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.Toolbar_button {
+    background-color: transparent;
+    border: none;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.Toolbar_button.secondary {
+    width: 25px;
+    height: 25px;
+}
+
+.Toolbar_button:hover {
+    border: none;
+    outline: none;
+}
+
+.Toolbar_button:focus {
+    border: none;
+    outline: none;
+}
+
+.Toolbar_button:active {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    transform: translateY(4px);
+}
+
+.Toolbar_button > svg {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 3px;
+}
+
+.Toolbar_button.active > svg {
+    stroke: #000000;
+}
+
+.Toolbar_button.active > svg > * {
+    stroke: #000000;
+}
+
+.Toolbar_button > span {
+    color: #000000;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.Divider {
+    width: 0px;
+    height: 40px;
+    border: 1px solid #c5c5c5;
+}
