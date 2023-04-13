@@ -1,2 +1,6 @@
 export const GLOBAL_POSTAGE_BATCH_ID =
     '0000000000000000000000000000000000000000000000000000000000000000';
+
+export const POD_NAME = 'fdp_slate';
+
+export const MAIN_FOLDER_PATH = '/fdp_slate_folder';

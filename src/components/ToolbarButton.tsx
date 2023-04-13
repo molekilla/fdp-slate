@@ -12,6 +12,7 @@ interface ToolbarButtonProps {
     text?: string;
     isActive?: boolean;
     isSecondaryButton?: boolean;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
     onMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -20,6 +21,7 @@ function ToolbarButton({
     text,
     isActive = false,
     isSecondaryButton = false,
+    onClick = undefined,
     onMouseDown = undefined
 }: ToolbarButtonProps): React.ReactElement<ToolbarButtonProps> {
     return (
@@ -28,6 +30,7 @@ function ToolbarButton({
                 isSecondaryButton ? ' secondary' : ''
             }`}
             type="button"
+            onClick={onClick}
             onMouseDown={onMouseDown}>
             <Icon />
             {!isEmptyString(text) && <span>{text}</span>}
