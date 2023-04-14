@@ -1,3 +1,4 @@
+import { Blossom } from '@fairdatasociety/blossom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
@@ -7,7 +8,6 @@ import { withHistory } from 'slate-history';
 import { Box, Button, Modal, TextField } from '@mui/material';
 
 import Toolbar from './Toolbar';
-import { useFdpStorage } from '../context/fdp.context';
 import type { FileListItem } from '../common/types';
 import ModalFileList from './ModalFileList';
 
@@ -39,35 +39,24 @@ const style = {
 };
 
 function Editor(): React.ReactElement {
-    const { blossom } = useFdpStorage();
+    const blossom = new Blossom();
     const [fileName, setFileName] = useState<string>('');
     const [openModalName, setOpenModalName] = useState<boolean>(false);
     const [openModalFileList, setOpenModalFileList] = useState<boolean>(false);
     const [myFiles, setMyFiles] = useState<FileListItem[]>([]);
 
     const connectToFdpStorage: () => Promise<void> = async () => {
+        const text = await blossom.echo<string>('test');
+        console.log(text); // 'test'
         try {
-            const allowed =
-                await blossom.fdpStorage.personalStorage.requestFullAccess();
-            if (allowed) {
-                console.log('dappid: ', blossom.dappId);
-                const podIsCrated =
-                    await blossom.fdpStorage.personalStorage.isDappPodCreated();
-                const podList = await blossom.fdpStorage.personalStorage.list();
-                if (
-                    (podList.pods.find((x) => x.name === POD_NAME) === null ||
-                        podList.pods.find((x) => x.name === POD_NAME) ===
-                            undefined) &&
-                    !podIsCrated
-                ) {
-                    await blossom.fdpStorage.personalStorage.create(
-                        blossom.dappId ?? POD_NAME
-                    );
-                    await blossom.fdpStorage.directory.create(
-                        POD_NAME,
-                        MAIN_FOLDER_PATH
-                    );
-                }
+            const podIsCrated =
+                await blossom.fdpStorage.personalStorage.isDappPodCreated();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const dappId = blossom.dappId;
+            if (!podIsCrated) {
+                // eslint-disable-next-line
+                // @ts-ignore
+                await blossom.fdpStorage.personalStorage.create(dappId);
             }
         } catch (error) {
             console.log('error connecting to fdp storage: ', error);
@@ -77,9 +66,9 @@ function Editor(): React.ReactElement {
     useEffect(() => {
         connectToFdpStorage();
 
-        return () => {
-            blossom.closeConnection();
-        };
+        // return () => {
+        //     blossom.closeConnection();
+        // };
     }, []);
 
     const renderElement: (props: RenderElementProps) => JSX.Element =
