@@ -22,19 +22,35 @@ import ToolbarButton from './ToolbarButton';
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-function Toolbar(): React.ReactElement {
+function Toolbar({
+    onNewFile,
+    onSave,
+    onOpenFiles
+}: {
+    onNewFile: React.MouseEventHandler<HTMLButtonElement>;
+    onSave: React.MouseEventHandler<HTMLButtonElement>;
+    onOpenFiles: React.MouseEventHandler<HTMLButtonElement>;
+}): React.ReactElement {
     const editor = useSlate();
     return (
         <div className="Toolbar">
-            <ToolbarButton Icon={NewDocumentIcon} text="New File" />
-            <ToolbarButton Icon={OpenDocumentIcon} text="Open" />
-            <ToolbarButton Icon={SaveIcon} text="Save" />
+            <ToolbarButton
+                Icon={NewDocumentIcon}
+                text="New File"
+                onClick={onNewFile}
+            />
+            <ToolbarButton
+                Icon={OpenDocumentIcon}
+                text="Open"
+                onClick={onOpenFiles}
+            />
+            <ToolbarButton Icon={SaveIcon} text="Save" onClick={onSave} />
             <div className="Divider" />
             <ToolbarButton
                 Icon={BoldIcon}
                 isSecondaryButton
                 isActive={isMarkActive(editor, 'bold')}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleMark(editor, 'bold');
                 }}
@@ -43,7 +59,7 @@ function Toolbar(): React.ReactElement {
                 Icon={ItalicIcon}
                 isSecondaryButton
                 isActive={isMarkActive(editor, 'italic')}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleMark(editor, 'italic');
                 }}
@@ -52,7 +68,7 @@ function Toolbar(): React.ReactElement {
                 Icon={UnderlineIcon}
                 isSecondaryButton
                 isActive={isMarkActive(editor, 'underline')}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleMark(editor, 'underline');
                 }}
@@ -65,7 +81,7 @@ function Toolbar(): React.ReactElement {
                     'left',
                     TEXT_ALIGN_TYPES.includes('left') ? 'align' : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'left');
                 }}
@@ -78,7 +94,7 @@ function Toolbar(): React.ReactElement {
                     'center',
                     TEXT_ALIGN_TYPES.includes('center') ? 'align' : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'center');
                 }}
@@ -91,7 +107,7 @@ function Toolbar(): React.ReactElement {
                     'right',
                     TEXT_ALIGN_TYPES.includes('right') ? 'align' : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'right');
                 }}
@@ -104,7 +120,7 @@ function Toolbar(): React.ReactElement {
                     'justify',
                     TEXT_ALIGN_TYPES.includes('justify') ? 'align' : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'justify');
                 }}
@@ -119,7 +135,7 @@ function Toolbar(): React.ReactElement {
                         ? 'align'
                         : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'numbered-list');
                 }}
@@ -134,7 +150,7 @@ function Toolbar(): React.ReactElement {
                         ? 'align'
                         : 'type'
                 )}
-                onMouseDown={(event) => {
+                onClick={(event) => {
                     event.preventDefault();
                     toggleBlock(editor, 'bulleted-list');
                 }}
