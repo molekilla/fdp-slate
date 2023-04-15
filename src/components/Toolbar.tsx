@@ -4,29 +4,37 @@ import { Editor, Transforms, Element as SlateElement } from 'slate';
 import type { BaseEditor } from 'slate';
 
 import '../styles/Toolbar.css';
-import { ReactComponent as NewDocumentIcon } from '../assets/newDocument.svg';
-import { ReactComponent as OpenDocumentIcon } from '../assets/openFile.svg';
-import { ReactComponent as SaveIcon } from '../assets/save.svg';
-import { ReactComponent as BoldIcon } from '../assets/bold.svg';
-import { ReactComponent as ItalicIcon } from '../assets/italic.svg';
-import { ReactComponent as UnderlineIcon } from '../assets/underline.svg';
-import { ReactComponent as NumberListIcon } from '../assets/numberList.svg';
-import { ReactComponent as BulletListIcon } from '../assets/bulletList.svg';
-import { ReactComponent as LeftAlignIcon } from '../assets/leftAlign.svg';
-import { ReactComponent as CenterAlignIcon } from '../assets/centerAlign.svg';
-import { ReactComponent as RightAlignIcon } from '../assets/rightAlign.svg';
-import { ReactComponent as JustifyAlignIcon } from '../assets/justifyAlign.svg';
+import NoteAddOutlinedIcon from '@mui/icons-material/NoteAddOutlined';
+import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import FormatBoldOutlinedIcon from '@mui/icons-material/FormatBoldOutlined';
+import FormatItalicOutlinedIcon from '@mui/icons-material/FormatItalicOutlined';
+import FormatUnderlinedOutlinedIcon from '@mui/icons-material/FormatUnderlinedOutlined';
+import FormatListNumberedOutlinedIcon from '@mui/icons-material/FormatListNumberedOutlined';
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined';
+import FormatAlignCenterOutlinedIcon from '@mui/icons-material/FormatAlignCenterOutlined';
+import FormatAlignRightOutlinedIcon from '@mui/icons-material/FormatAlignRightOutlined';
+import FormatAlignJustifyOutlinedIcon from '@mui/icons-material/FormatAlignJustifyOutlined';
+import TitleOutlinedIcon from '@mui/icons-material/TitleOutlined';
+import FormatQuoteOutlinedIcon from '@mui/icons-material/FormatQuoteOutlined';
+import LocalParkingOutlinedIcon from '@mui/icons-material/LocalParkingOutlined';
 
 import ToolbarButton from './ToolbarButton';
+import { MODE_TEXT } from './Editor';
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
 function Toolbar({
+    selectedMode,
+    setSelectedMode,
     onNewFile,
     onSave,
     onOpenFiles
 }: {
+    selectedMode: string;
+    setSelectedMode: (value: string) => void;
     onNewFile: React.MouseEventHandler<HTMLButtonElement>;
     onSave: React.MouseEventHandler<HTMLButtonElement>;
     onOpenFiles: React.MouseEventHandler<HTMLButtonElement>;
@@ -35,124 +43,169 @@ function Toolbar({
     return (
         <div className="Toolbar">
             <ToolbarButton
-                Icon={NewDocumentIcon}
+                Icon={NoteAddOutlinedIcon}
                 text="New File"
                 onClick={onNewFile}
             />
             <ToolbarButton
-                Icon={OpenDocumentIcon}
+                Icon={FolderOpenOutlinedIcon}
                 text="Open"
                 onClick={onOpenFiles}
             />
-            <ToolbarButton Icon={SaveIcon} text="Save" onClick={onSave} />
+            <ToolbarButton
+                Icon={SaveOutlinedIcon}
+                text="Save"
+                onClick={onSave}
+            />
+            {selectedMode === MODE_TEXT.richText && (
+                <>
+                    <div className="Divider" />
+                    <ToolbarButton
+                        Icon={FormatBoldOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isMarkActive(editor, 'bold')}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleMark(editor, 'bold');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatItalicOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isMarkActive(editor, 'italic')}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleMark(editor, 'italic');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatUnderlinedOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isMarkActive(editor, 'underline')}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleMark(editor, 'underline');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatAlignLeftOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'left',
+                            TEXT_ALIGN_TYPES.includes('left') ? 'align' : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'left');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatAlignCenterOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'center',
+                            TEXT_ALIGN_TYPES.includes('center')
+                                ? 'align'
+                                : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'center');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatAlignRightOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'right',
+                            TEXT_ALIGN_TYPES.includes('right')
+                                ? 'align'
+                                : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'right');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatAlignJustifyOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'justify',
+                            TEXT_ALIGN_TYPES.includes('justify')
+                                ? 'align'
+                                : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'justify');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatListNumberedOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'numbered-list',
+                            TEXT_ALIGN_TYPES.includes('numbered-list')
+                                ? 'align'
+                                : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'numbered-list');
+                        }}
+                    />
+                    <ToolbarButton
+                        Icon={FormatListBulletedOutlinedIcon}
+                        isSecondaryButton
+                        isActive={isBlockActive(
+                            editor,
+                            'bulleted-list',
+                            TEXT_ALIGN_TYPES.includes('bulleted-list')
+                                ? 'align'
+                                : 'type'
+                        )}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            toggleBlock(editor, 'bulleted-list');
+                        }}
+                    />
+                </>
+            )}
             <div className="Divider" />
             <ToolbarButton
-                Icon={BoldIcon}
+                Icon={FormatQuoteOutlinedIcon}
+                text="Markdown"
                 isSecondaryButton
-                isActive={isMarkActive(editor, 'bold')}
+                isActive={selectedMode === MODE_TEXT.markdown}
                 onClick={(event) => {
                     event.preventDefault();
-                    toggleMark(editor, 'bold');
+                    setSelectedMode(MODE_TEXT.markdown);
                 }}
             />
             <ToolbarButton
-                Icon={ItalicIcon}
+                Icon={TitleOutlinedIcon}
+                text="Rich Text"
                 isSecondaryButton
-                isActive={isMarkActive(editor, 'italic')}
+                isActive={selectedMode === MODE_TEXT.richText}
                 onClick={(event) => {
                     event.preventDefault();
-                    toggleMark(editor, 'italic');
+                    setSelectedMode(MODE_TEXT.richText);
                 }}
             />
             <ToolbarButton
-                Icon={UnderlineIcon}
+                Icon={LocalParkingOutlinedIcon}
+                text="Plain text"
                 isSecondaryButton
-                isActive={isMarkActive(editor, 'underline')}
+                isActive={selectedMode === MODE_TEXT.plainText}
                 onClick={(event) => {
                     event.preventDefault();
-                    toggleMark(editor, 'underline');
-                }}
-            />
-            <ToolbarButton
-                Icon={LeftAlignIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'left',
-                    TEXT_ALIGN_TYPES.includes('left') ? 'align' : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'left');
-                }}
-            />
-            <ToolbarButton
-                Icon={CenterAlignIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'center',
-                    TEXT_ALIGN_TYPES.includes('center') ? 'align' : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'center');
-                }}
-            />
-            <ToolbarButton
-                Icon={RightAlignIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'right',
-                    TEXT_ALIGN_TYPES.includes('right') ? 'align' : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'right');
-                }}
-            />
-            <ToolbarButton
-                Icon={JustifyAlignIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'justify',
-                    TEXT_ALIGN_TYPES.includes('justify') ? 'align' : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'justify');
-                }}
-            />
-            <ToolbarButton
-                Icon={NumberListIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'numbered-list',
-                    TEXT_ALIGN_TYPES.includes('numbered-list')
-                        ? 'align'
-                        : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'numbered-list');
-                }}
-            />
-            <ToolbarButton
-                Icon={BulletListIcon}
-                isSecondaryButton
-                isActive={isBlockActive(
-                    editor,
-                    'bulleted-list',
-                    TEXT_ALIGN_TYPES.includes('bulleted-list')
-                        ? 'align'
-                        : 'type'
-                )}
-                onClick={(event) => {
-                    event.preventDefault();
-                    toggleBlock(editor, 'bulleted-list');
+                    setSelectedMode(MODE_TEXT.plainText);
                 }}
             />
         </div>

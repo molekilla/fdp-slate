@@ -2,13 +2,14 @@ import React from 'react';
 
 import '../styles/Toolbar.css';
 import { isEmptyString } from '../common/utils';
+import type { OverridableComponent } from '@mui/material/OverridableComponent';
+import type { SvgIconTypeMap } from '@mui/material';
 
 interface ToolbarButtonProps {
-    Icon: React.FunctionComponent<
-        React.SVGProps<SVGSVGElement> & {
-            title?: string | undefined;
-        }
-    >;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
+        muiName: string;
+    };
     text?: string;
     isActive?: boolean;
     isSecondaryButton?: boolean;

@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
 }
 
 .Toolbar_button {
@@ -30,8 +30,7 @@
 }
 
 .Toolbar_button.secondary {
-    width: 25px;
-    height: 25px;
+    height: 30px;
 }
 
 .Toolbar_button:hover {
@@ -55,18 +54,26 @@
     margin-bottom: 3px;
 }
 
+.Toolbar_button.secondary > svg {
+    fill: #a9a9a9;
+}
+
 .Toolbar_button.active > svg {
-    stroke: #000000;
+    fill: #000000;
 }
 
 .Toolbar_button.active > svg > * {
-    stroke: #000000;
+    fill: #000000;
 }
 
 .Toolbar_button > span {
     color: #000000;
     font-size: 12px;
     font-weight: 400;
+}
+
+.Toolbar_button.active > span {
+    font-weight: bold;
 }
 
 .Divider {

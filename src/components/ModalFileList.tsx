@@ -5,7 +5,8 @@ import {
     ListItem,
     ListItemButton,
     ListItemText,
-    Modal
+    Modal,
+    Typography
 } from '@mui/material';
 
 import type { FileListItem } from '../common/types';
@@ -40,6 +41,13 @@ function ModalFileList({
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={style}>
+                <Typography
+                    style={{ textAlign: 'center' }}
+                    id="modal-modal-title"
+                    variant="h6"
+                    component="h2">
+                    Open from fdp-storage
+                </Typography>
                 <List>
                     {files.map((fileItem) => (
                         <ListItem key={fileItem.id} disablePadding>
