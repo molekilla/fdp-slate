@@ -14,8 +14,9 @@ Slate editor FDP integration
 2. Run `npm install`
 3. npm run build
 4. upload build folder as Website on Swarm
-![Screenshot](add_website_swarm.png)
+   ![Screenshot](add_website_swarm.png)
 5. Click on view Website
+   ![Screenshot](view_website_swarm.png)
 
 ## Using fdp-slate
 
