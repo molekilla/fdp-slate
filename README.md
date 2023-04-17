@@ -24,6 +24,7 @@ Slate editor FDP integration
 https://user-images.githubusercontent.com/11984246/232548666-79b299dd-db0a-45c1-bebd-3f11aa754c41.mov
 
 ### Open file
+https://user-images.githubusercontent.com/11984246/232550187-737af2bd-01f8-4db0-8d13-93bdb17093b4.mov
 
 ### Markdown mode
 
