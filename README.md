@@ -1,21 +1,20 @@
 # fdp-slate
+
 Slate editor FDP integration
 
 ## Requirements
 
-- Fdp-play
-- Blossom Extension
-- Swarm Extension
-
-TODO
+-   Fdp-play
+-   Blossom Extension
+-   Swarm Extension
 
 ## Installation
 
 1. Clone repository
 2. Run `npm install`
-
-TODO
-
+3. npm run build
+4. upload build folder as Website on Swarm
+5. Click on view Website
 
 ## Using fdp-slate
 
@@ -29,7 +28,4 @@ TODO
 
 TODO
 
-
 ## Component Diagram
-
-
