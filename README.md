@@ -4,15 +4,15 @@ Slate editor FDP integration
 
 ## Requirements
 
--   Fdp-play
--   Blossom Extension
--   Swarm Extension
+-   [fdp-play](https://github.com/fairDataSociety/fdp-play)
+-   [Blossom Extension](https://github.com/fairDataSociety/blossom)
+-   [Swarm Extension](https://chrome.google.com/webstore/detail/ethereum-swarm-extension/afpgelfcknfbbfnipnomfdbbnbbemnia)
 
 ## Installation
 
 1. Clone repository
 2. Run `npm install`
-3. npm run build
+3. Run `npm run build`
 4. upload build folder as Website on Swarm
    ![add_website_swarm](https://user-images.githubusercontent.com/11984246/232548763-c8d9f9ef-8b3b-4abe-bcda-f47e5281ab55.png)
 5. Click on view Website
@@ -32,3 +32,8 @@ https://user-images.githubusercontent.com/11984246/232552275-2c046398-e62d-41a1-
 
 
 ## Component Diagram
+![Screenshot from 2023-04-18 09-01-53](https://user-images.githubusercontent.com/1248071/232802205-6c1798ee-6fa6-4083-923b-a5766f56537c.png)
+
+## License
+
+Apache 2.0
