@@ -2,6 +2,11 @@
 
 Slate editor FDP integration
 
+
+## Description
+
+This is a sample project which showcases `fdp-storage` and Blossom extension with Slate React editor component.
+
 ## Requirements
 
 -   [fdp-play](https://github.com/fairDataSociety/fdp-play)
