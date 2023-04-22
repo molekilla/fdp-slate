@@ -1,5 +1,5 @@
-import { Blossom } from '@fairdatasociety/blossom';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     createEditor,
     Text,
@@ -12,17 +12,17 @@ import {
 } from 'slate';
 import { Editable, Slate, withReact, ReactEditor } from 'slate-react';
 import type { RenderElementProps, RenderLeafProps } from 'slate-react';
-import type { Descendant } from 'slate';
+import type { Descendant, BaseRange } from 'slate';
 import { withHistory } from 'slate-history';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';
 
+import BlossomService from '../services/blossom';
+
 import Toolbar from './Toolbar';
 import type { FileListItem } from '../common/types';
 import ModalFileList from './ModalFileList';
-
-import { MAIN_FOLDER_PATH } from '../constants/constants';
 
 import '../styles/Editor.css';
 
@@ -70,8 +70,6 @@ const style = {
 };
 
 function Editor(): React.ReactElement {
-    const blossom = new Blossom();
-    const dappId = blossom.dappId ?? '';
     const [fileName, setFileName] = useState<string>('');
     const [openModalName, setOpenModalName] = useState<boolean>(false);
     const [openModalFileList, setOpenModalFileList] = useState<boolean>(false);
@@ -80,70 +78,31 @@ function Editor(): React.ReactElement {
     const [selectedMode, setSelectedMode] = useState<string>(
         MODE_TEXT.markdown
     );
+    const blossomService = useMemo(() => BlossomService(), []);
 
     const editor = useMemo(
         () => withShortcuts(withHistory(withReact(createEditor()))),
         []
     );
 
-    const connectToFdpStorage: () => Promise<void> = async () => {
-        await blossom.echo<string>('test');
-        try {
-            const allowed =
-                await blossom.fdpStorage.personalStorage.requestFullAccess();
-            if (allowed) {
-                const podIsCrated =
-                    await blossom.fdpStorage.personalStorage.isDappPodCreated();
-                if (!podIsCrated) {
-                    await blossom.fdpStorage.personalStorage.create(dappId);
-                    await blossom.fdpStorage.directory.create(
-                        dappId,
-                        MAIN_FOLDER_PATH
-                    );
-                } else {
-                    try {
-                        await blossom.fdpStorage.directory.read(
-                            dappId,
-                            MAIN_FOLDER_PATH
-                        );
-                    } catch (error) {
-                        await blossom.fdpStorage.directory.create(
-                            dappId,
-                            MAIN_FOLDER_PATH
-                        );
-                    }
-                }
-            }
-        } catch (error) {
-            console.log('error connecting to fdp storage: ', error);
-        }
-    };
-
     useEffect(() => {
-        connectToFdpStorage();
-
-        // return () => {
-        //     blossom.closeConnection();
-        // };
+        blossomService.connectToFdpStorage();
     }, []);
 
-    const renderElement: (props: RenderElementProps) => JSX.Element =
-        useCallback(
-            (props) => {
-                if (selectedMode === MODE_TEXT.markdown) {
-                    return <ElementMarkdown {...props} />;
-                }
-                return <Element {...props} />;
-            },
-            [selectedMode]
-        );
+    const renderElement: (props: RenderElementProps) => JSX.Element = (
+        props
+    ) => {
+        if (selectedMode === MODE_TEXT.markdown) {
+            return <ElementMarkdown {...props} />;
+        }
+        return <Element {...props} />;
+    };
 
-    const renderLeaf: (props: RenderLeafProps) => JSX.Element = useCallback(
-        (props) => <Leaf {...props} />,
-        []
+    const renderLeaf: (props: RenderLeafProps) => JSX.Element = (props) => (
+        <Leaf {...props} />
     );
 
-    const decorate = useCallback(([node, path]: any) => {
+    const decorate = ([node, path]: any): BaseRange[] => {
         const ranges: any[] = [];
 
         if (!Text.isText(node)) {
@@ -185,90 +144,84 @@ function Editor(): React.ReactElement {
         }
 
         return ranges;
-    }, []);
+    };
 
-    const handleDOMBeforeInput = useCallback(
-        (e: InputEvent) => {
-            queueMicrotask(() => {
-                const pendingDiffs = ReactEditor.androidPendingDiffs(editor);
+    const handleDOMBeforeInput = (e: InputEvent): void => {
+        queueMicrotask(() => {
+            const pendingDiffs = ReactEditor.androidPendingDiffs(editor);
 
-                const scheduleFlush = pendingDiffs?.some(({ diff, path }) => {
-                    if (!diff.text.endsWith(' ')) {
-                        return false;
-                    }
-
-                    const { text } = SlateNode.leaf(editor, path);
-                    const beforeText =
-                        text.slice(0, diff.start) + diff.text.slice(0, -1);
-                    if (!(beforeText in SHORTCUTS)) {
-                        // eslint-disable-next-line array-callback-return
-                        return;
-                    }
-
-                    const blockEntry = SlateEditor.above(editor, {
-                        at: path,
-                        match: (n) =>
-                            SlateElement.isElement(n) &&
-                            SlateEditor.isBlock(editor, n)
-                    });
-                    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                    if (!blockEntry) {
-                        return false;
-                    }
-
-                    const [, blockPath] = blockEntry;
-                    return SlateEditor.isStart(
-                        editor,
-                        SlateEditor.start(editor, path),
-                        blockPath
-                    );
-                });
-
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                if (scheduleFlush) {
-                    ReactEditor.androidScheduleFlush(editor);
+            const scheduleFlush = pendingDiffs?.some(({ diff, path }) => {
+                if (!diff.text.endsWith(' ')) {
+                    return false;
                 }
+
+                const { text } = SlateNode.leaf(editor, path);
+                const beforeText =
+                    text.slice(0, diff.start) + diff.text.slice(0, -1);
+                if (!(beforeText in SHORTCUTS)) {
+                    // eslint-disable-next-line array-callback-return
+                    return;
+                }
+
+                const blockEntry = SlateEditor.above(editor, {
+                    at: path,
+                    match: (n) =>
+                        SlateElement.isElement(n) &&
+                        SlateEditor.isBlock(editor, n)
+                });
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                if (!blockEntry) {
+                    return false;
+                }
+
+                const [, blockPath] = blockEntry;
+                return SlateEditor.isStart(
+                    editor,
+                    SlateEditor.start(editor, path),
+                    blockPath
+                );
             });
-        },
-        [editor]
-    );
+
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            if (scheduleFlush) {
+                ReactEditor.androidScheduleFlush(editor);
+            }
+        });
+    };
 
     const openFiles: () => Promise<void> = async () => {
         try {
-            const directories = await blossom.fdpStorage.directory.read(
-                dappId,
-                MAIN_FOLDER_PATH
-            );
-            if (directories != null && directories.files.length > 0) {
-                setMyFiles(
-                    directories.files.map((fileItem) => ({
-                        id: `${new Date().getTime()}`,
-                        name: fileItem.name
-                    }))
-                );
+            const files = await blossomService.readFiles();
+
+            if (files.length > 0) {
+                setMyFiles(files);
                 setOpenModalFileList(true);
             }
-        } catch (error) {
-            console.log('error loading files: ', error);
+        } catch (error: any) {
+            alert(`loading files: ${error.message}`);
+        }
+    };
+
+    const saveNewFile: () => Promise<void> = async () => {
+        try {
+            const content = JSON.stringify(
+                editorValue.map((child) => ({ ...child, mode: selectedMode }))
+            );
+            await blossomService.createFile(fileName, content);
+            setOpenModalName(false);
+        } catch (error: any) {
+            alert(`saving new file: ${error.message}`);
         }
     };
 
     const saveOpenFile: () => Promise<void> = async () => {
         try {
-            await blossom.fdpStorage.file.delete(
-                dappId,
-                `${MAIN_FOLDER_PATH}/${fileName}`
-            );
             const content = JSON.stringify(
                 editorValue.map((child) => ({ ...child, mode: selectedMode }))
             );
-            await blossom.fdpStorage.file.uploadData(
-                dappId,
-                `${MAIN_FOLDER_PATH}/${fileName}`,
-                content
-            );
-        } catch (error) {
-            console.log('error saving file: ', error);
+            await blossomService.updateFile(fileName, content);
+        } catch (error: any) {
+            alert(`saving file: ${error.message}`);
         }
     };
 
@@ -288,22 +241,7 @@ function Editor(): React.ReactElement {
     };
 
     const onSaveNewFile: React.MouseEventHandler<HTMLButtonElement> = () => {
-        const content = JSON.stringify(
-            editorValue.map((child) => ({ ...child, mode: selectedMode }))
-        );
-        blossom.fdpStorage.file
-            .uploadData(
-                dappId,
-                `${MAIN_FOLDER_PATH}/${fileName}.txt`,
-                content ?? ''
-            )
-            .then((_) => {
-                setOpenModalName(false);
-            })
-            .catch((error) => {
-                alert('Error saving the file');
-                console.log('error saving new file: ', error);
-            });
+        saveNewFile();
     };
 
     const onOpenFiles: React.MouseEventHandler<HTMLButtonElement> = () => {
@@ -314,25 +252,20 @@ function Editor(): React.ReactElement {
         selectedFileName
     ) => {
         try {
-            const content = await blossom.fdpStorage.file.downloadData(
-                dappId,
-                `${MAIN_FOLDER_PATH}/${selectedFileName}`
-            );
-            if (content != null) {
-                const text = new TextDecoder().decode(content);
-                const parsed = JSON.parse(text);
-                const contentFile =
-                    parsed !== null || parsed !== undefined
-                        ? (parsed as Descendant[])
-                        : INITIAL_VALUE;
-                setFileName(selectedFileName);
-                editor.children = contentFile;
-                setSelectedMode((contentFile[0] as any).mode);
-                setMyFiles([]);
-                setOpenModalFileList(false);
-            }
-        } catch (error) {
-            console.log('error loading files: ', error);
+            const content = await blossomService.openFile(selectedFileName);
+            const text = new TextDecoder().decode(content);
+            const parsed = JSON.parse(text);
+            const contentFile =
+                parsed !== null || parsed !== undefined
+                    ? (parsed as Descendant[])
+                    : INITIAL_VALUE;
+            setFileName(selectedFileName);
+            editor.children = contentFile;
+            setSelectedMode((contentFile[0] as any).mode);
+            setMyFiles([]);
+            setOpenModalFileList(false);
+        } catch (error: any) {
+            alert(`opening the file ${selectedFileName}: ${error.message}`);
         }
     };
 
