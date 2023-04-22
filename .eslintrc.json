@@ -5,7 +5,6 @@
     },
     "extends": [
         "plugin:react/recommended",
-        "standard-with-typescript",
         "plugin:prettier/recommended"
     ],
     "overrides": [],
