@@ -67,5 +67,9 @@
         "prettier": "2.8.7",
         "typescript": "^5.0.3"
     },
-    "homepage": "./"
+    "homepage": "./",
+    "engines": {
+        "npm": "8.1.4",
+        "node": "17.2.0"
+    }
 }
