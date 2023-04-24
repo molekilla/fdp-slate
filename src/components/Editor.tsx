@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
     createEditor,
@@ -109,7 +108,6 @@ function Editor(): React.ReactElement {
             return ranges;
         }
 
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         const getLength = (token: any) => {
             if (typeof token === 'string') {
                 return token.length;
@@ -117,7 +115,6 @@ function Editor(): React.ReactElement {
                 return token.content.length;
             } else {
                 return token.content.reduce(
-                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                     (l: any, t: any) => l + getLength(t),
                     0
                 );
@@ -129,7 +126,6 @@ function Editor(): React.ReactElement {
 
         for (const token of tokens) {
             const length = getLength(token);
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             const end = start + length;
 
             if (typeof token !== 'string') {
@@ -169,7 +165,6 @@ function Editor(): React.ReactElement {
                         SlateElement.isElement(n) &&
                         SlateEditor.isBlock(editor, n)
                 });
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                 if (!blockEntry) {
                     return false;
                 }
@@ -182,7 +177,6 @@ function Editor(): React.ReactElement {
                 );
             });
 
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             if (scheduleFlush) {
                 ReactEditor.androidScheduleFlush(editor);
             }
@@ -278,7 +272,7 @@ function Editor(): React.ReactElement {
                     const isAstChange = editor.operations.some(
                         (op: any) => op.type !== 'set_selection'
                     );
-                    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
                     if (isAstChange) {
                         setEditorValue(value);
                     }
@@ -358,7 +352,6 @@ const Element: (props: RenderElementProps) => JSX.Element = ({
     element
 }: RenderElementProps) => {
     const style = {
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         textAlign: (element as any).align ? (element as any).align : 'left'
     };
     switch ((element as any).type) {
@@ -413,22 +406,19 @@ const Leaf: (props: RenderLeafProps) => JSX.Element = ({
     leaf
 }: RenderLeafProps) => {
     const leafCopy = leaf as any;
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
     if (leafCopy.bold) {
         children = <strong>{children}</strong>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (leafCopy.code) {
         children = <code>{children}</code>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (leafCopy.italic) {
         children = <em>{children}</em>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (leafCopy.underline) {
         children = <u>{children}</u>;
     }
@@ -442,7 +432,6 @@ const ElementMarkdown: (props: RenderElementProps) => JSX.Element = ({
     element
 }: RenderElementProps) => {
     const style = {
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         textAlign: (element as any).align ? (element as any).align : 'left'
     };
     switch ((element as any).type) {
@@ -509,33 +498,29 @@ const ElementMarkdown: (props: RenderElementProps) => JSX.Element = ({
     }
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const withShortcuts = (editor: any) => {
     const { deleteBackward, insertText } = editor;
 
     editor.insertText = (text: any) => {
         const { selection } = editor;
 
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (text.endsWith(' ') && selection && Range.isCollapsed(selection)) {
             const { anchor } = selection;
             const block = SlateEditor.above(editor, {
                 match: (n) =>
                     SlateElement.isElement(n) && SlateEditor.isBlock(editor, n)
             });
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
             const path = block ? block[1] : [];
             const start = SlateEditor.start(editor, path);
             const range = { anchor, focus: start };
             const beforeText =
-                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 SlateEditor.string(editor, range) + text.slice(0, -1);
             const foundKey =
                 Object.keys(SHORTCUTS).find((x) => beforeText.startsWith(x)) ??
                 '';
             const type = SHORTCUTS[foundKey];
 
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             if (type && type !== 'bold') {
                 Transforms.select(editor, range);
 
@@ -575,14 +560,12 @@ const withShortcuts = (editor: any) => {
     editor.deleteBackward = (...args: any) => {
         const { selection } = editor;
 
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (selection && Range.isCollapsed(selection)) {
             const match = SlateEditor.above(editor, {
                 match: (n) =>
                     SlateElement.isElement(n) && SlateEditor.isBlock(editor, n)
             });
 
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             if (match) {
                 const [block, path] = match;
                 const start = SlateEditor.start(editor, path);

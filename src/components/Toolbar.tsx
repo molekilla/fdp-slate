@@ -268,7 +268,6 @@ const isBlockActive: (
     blockType: string
 ) => boolean = (editor, format, blockType = 'type') => {
     const { selection } = editor;
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!selection) return false;
 
     const [match] = Array.from(
@@ -281,7 +280,6 @@ const isBlockActive: (
         })
     );
 
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     return !!match;
 };
 
@@ -290,7 +288,7 @@ const isMarkActive: (editor: Editor, format: string) => boolean = (
     format
 ) => {
     const marks: any = Editor.marks(editor);
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
     return marks ? marks[format] === true : false;
 };
 
