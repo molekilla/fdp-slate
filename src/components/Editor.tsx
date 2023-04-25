@@ -16,6 +16,9 @@ import { withHistory } from 'slate-history';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';
+import { HocuspocusProvider } from '@hocuspocus/provider';
+import { withYHistory, withYjs, YjsEditor } from '@slate-yjs/core';
+import * as Y from 'yjs';
 
 import BlossomService from '../services/blossom';
 
@@ -263,10 +266,57 @@ function Editor(): React.ReactElement {
         }
     };
 
+    const provider = useMemo(
+        () =>
+            new HocuspocusProvider({
+                url: 'ws://127.0.0.1:9028/topic/crdt-test',
+                name: 'slate-yjs-demo',
+                // @ts-ignore
+                connect: false
+            }),
+        []
+    );
+
+    const editorYjs = useMemo(() => {
+        const sharedType = provider.document.get('content', Y.XmlText);
+        // @ts-ignore
+        const e = withReact(withYHistory(withYjs(createEditor(), sharedType)));
+
+        // Ensure editor always has at least 1 valid child
+        const { normalizeNode } = e;
+        e.normalizeNode = (entry) => {
+            const [node] = entry;
+            if (!SlateEditor.isEditor(node) || node.children.length > 0) {
+                return normalizeNode(entry);
+            }
+
+            Transforms.insertNodes(
+                editor,
+                {
+                    // @ts-ignore
+                    type: 'paragraph',
+                    children: [{ text: '' }]
+                },
+                { at: [0] }
+            );
+        };
+
+        return e;
+    }, [provider.document]);
+
+    useEffect(() => {
+        provider.connect();
+        return () => provider.disconnect();
+    }, [provider]);
+    useEffect(() => {
+        YjsEditor.connect(editorYjs);
+        return () => YjsEditor.disconnect(editorYjs);
+    }, [editorYjs]);
+
     return (
         <>
             <Slate
-                editor={editor}
+                editor={editorYjs}
                 value={INITIAL_VALUE}
                 onChange={(value) => {
                     const isAstChange = editor.operations.some(
