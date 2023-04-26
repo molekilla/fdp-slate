@@ -27,6 +27,8 @@ import type { FileListItem } from '../common/types';
 import ModalFileList from './ModalFileList';
 
 import '../styles/Editor.css';
+import { withNormalize } from '../plugins/withNormalize';
+import { withMarkdown } from '../plugins/withMarkdown';
 
 const INITIAL_VALUE = [
     {
@@ -72,6 +74,8 @@ const style = {
 };
 
 function Editor(): React.ReactElement {
+    const [connected, setConnected] = useState(false);
+
     const [fileName, setFileName] = useState<string>('');
     const [openModalName, setOpenModalName] = useState<boolean>(false);
     const [openModalFileList, setOpenModalFileList] = useState<boolean>(false);
@@ -82,10 +86,10 @@ function Editor(): React.ReactElement {
     );
     const blossomService = useMemo(() => BlossomService(), []);
 
-    const editor = useMemo(
-        () => withShortcuts(withHistory(withReact(createEditor()))),
-        []
-    );
+    // const editor = useMemo(
+    //     () => withShortcuts(withHistory(withReact(createEditor()))),
+    //     []
+    // );
 
     useEffect(() => {
         blossomService.connectToFdpStorage();
@@ -269,39 +273,33 @@ function Editor(): React.ReactElement {
     const provider = useMemo(
         () =>
             new HocuspocusProvider({
-                url: 'ws://127.0.0.1:9028/topic/crdt-test',
+                url: 'ws://127.0.0.1:9028/topic/crdt-test-1',
                 name: 'slate-yjs-demo',
+                onConnect: () => setConnected(true),
+                onDisconnect: () => setConnected(false),
                 // @ts-ignore
                 connect: false
             }),
         []
     );
 
-    const editorYjs = useMemo(() => {
-        const sharedType = provider.document.get('content', Y.XmlText);
-        // @ts-ignore
-        const e = withReact(withYHistory(withYjs(createEditor(), sharedType)));
+    const editor = useMemo(() => {
+        const sharedType = provider.document.get(
+            'content',
+            Y.XmlText
+        ) as Y.XmlText;
 
-        // Ensure editor always has at least 1 valid child
-        const { normalizeNode } = e;
-        e.normalizeNode = (entry) => {
-            const [node] = entry;
-            if (!SlateEditor.isEditor(node) || node.children.length > 0) {
-                return normalizeNode(entry);
-            }
-
-            Transforms.insertNodes(
-                editor,
-                {
-                    // @ts-ignore
-                    type: 'paragraph',
-                    children: [{ text: '' }]
-                },
-                { at: [0] }
-            );
-        };
-
-        return e;
+        return withMarkdown(
+            withNormalize(
+                withReact(
+                    withYHistory(
+                        withYjs(createEditor(), sharedType, {
+                            autoConnect: false
+                        })
+                    )
+                )
+            )
+        );
     }, [provider.document]);
 
     useEffect(() => {
@@ -309,15 +307,18 @@ function Editor(): React.ReactElement {
         return () => provider.disconnect();
     }, [provider]);
     useEffect(() => {
-        YjsEditor.connect(editorYjs);
-        return () => YjsEditor.disconnect(editorYjs);
-    }, [editorYjs]);
+        // @ts-ignore
+        YjsEditor.connect(editor);
+        // @ts-ignore
+        return () => YjsEditor.disconnect(editor);
+    }, [editor]);
 
     return (
         <>
             <Slate
-                editor={editorYjs}
-                value={INITIAL_VALUE}
+                // @ts-ignore
+                editor={editor}
+                value={editorValue}
                 onChange={(value) => {
                     const isAstChange = editor.operations.some(
                         (op: any) => op.type !== 'set_selection'
@@ -352,8 +353,6 @@ function Editor(): React.ReactElement {
                             ? undefined
                             : renderLeaf
                     }
-                    spellCheck
-                    autoFocus
                 />
             </Slate>
             <Modal
