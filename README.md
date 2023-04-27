@@ -5,7 +5,7 @@ Slate editor FDP integration
 
 ## Description
 
-This is a sample project which showcases `fdp-storage` and Blossom extension with Slate React editor component.
+This is a sample project which showcases `y-fdp-storage` and 'fdp-slate-crdt-server` with Slate React editor component.
 
 ## Branches
 
