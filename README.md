@@ -9,8 +9,8 @@ This is a sample project which showcases `fdp-storage` and Blossom extension wit
 
 ## Branches
 
-`main`: Contains Slate integration with `Blossom` and `fdp-storage`.
-`crdt-slate`: Contains Slate integration with `fdp-slate-crdt-server` for Yjs CRDT applications.
+- `main`: Contains Slate integration with `Blossom` and `fdp-storage`.
+- `crdt-slate`: Contains Slate integration with `fdp-slate-crdt-server` for Yjs CRDT applications.
 
 ## Requirements
 
