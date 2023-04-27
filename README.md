@@ -7,11 +7,15 @@ Slate editor FDP integration
 
 This is a sample project which showcases `fdp-storage` and Blossom extension with Slate React editor component.
 
+## Branches
+
+`main`: Contains Slate integration with `Blossom` and `fdp-storage`.
+`crdt-slate`: Contains Slate integration with `fdp-slate-crdt-server` for Yjs CRDT applications.
+
 ## Requirements
 
+-   [fdp-slate-crdt-server](https://github.com/molekilla/fdp-slate-crdt-server)
 -   [fdp-play](https://github.com/fairDataSociety/fdp-play)
--   [Blossom Extension](https://github.com/fairDataSociety/blossom)
--   [Swarm Extension](https://chrome.google.com/webstore/detail/ethereum-swarm-extension/afpgelfcknfbbfnipnomfdbbnbbemnia)
 
 ## Installation
 
@@ -23,21 +27,71 @@ This is a sample project which showcases `fdp-storage` and Blossom extension wit
 5. Click on view Website
    ![view_website_swarm](https://user-images.githubusercontent.com/11984246/232548858-019a8c29-ad0c-4327-a3f6-2f2842c367b9.png)
 
-## Using fdp-slate
+## Using
 
-### New file and Save file
-https://user-images.githubusercontent.com/11984246/232548666-79b299dd-db0a-45c1-bebd-3f11aa754c41.mov
+Be sure to have both `fdp-play` and `fdp-slate-crdt-server` running. Configure the Hocuspocus websocket config with the url containing the topic.
 
-### Open file
-https://user-images.githubusercontent.com/11984246/232550187-737af2bd-01f8-4db0-8d13-93bdb17093b4.mov
+```typescript
+const provider = useMemo(
+      () =>
+         new HocuspocusProvider({
+               url: 'ws://127.0.0.1:9028/topic/crdt-document',
+               name: 'slate-yjs-demo',
+               onConnect: () => setConnected(true),
+               onDisconnect: () => setConnected(false),
+               connect: false
+         }),
+      []
+   );
 
-### Markdown mode
-https://user-images.githubusercontent.com/11984246/232552275-2c046398-e62d-41a1-97bf-af10a3455a90.mov
+```
 
+## How it works
 
+Yjs Slate plugin works together with Hocuspocus (A Yjs websocket server) using an Y Shared Type. The server keeps sync with a Shared Type on the server and with an extension reads and writes to a configured Swarm feed using `y-fdp-storage` library.
 
-## Component Diagram
-![Screenshot from 2023-04-18 09-01-53](https://user-images.githubusercontent.com/1248071/232802205-6c1798ee-6fa6-4083-923b-a5766f56537c.png)
+### Server
+
+```typescript
+async onLoadDocument(data) {
+   // Load the initial value in case the document is empty
+   if (data.document.isEmpty("content")) {
+      const insertDelta = slateNodesToInsertDelta(initialValue);
+      const sharedRoot = data.document.get("content", XmlText);
+
+      // @ts-ignore - Yjs types are not up to date
+      sharedRoot.applyDelta(insertDelta);
+   }
+   return data.document;
+}
+```
+
+### Client
+
+```typescript
+const editor = useMemo(() => {
+   const sharedType = provider.document.get(
+      'content',
+      Y.XmlText
+   ) as Y.XmlText;
+
+   return withMarkdown(
+      withNormalize(
+            withReact(
+               withYHistory(
+                  withYjs(createEditor(), sharedType, {
+                        autoConnect: false
+                  })
+               )
+            )
+      )
+   );
+}, [provider.document]);
+```
+
+## Maintainer
+
+@molekilla
 
 ## License
 

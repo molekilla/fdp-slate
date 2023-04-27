@@ -86,11 +86,6 @@ function Editor(): React.ReactElement {
     );
     const blossomService = useMemo(() => BlossomService(), []);
 
-    // const editor = useMemo(
-    //     () => withShortcuts(withHistory(withReact(createEditor()))),
-    //     []
-    // );
-
     useEffect(() => {
         blossomService.connectToFdpStorage();
     }, []);
@@ -190,19 +185,6 @@ function Editor(): React.ReactElement {
         });
     };
 
-    const openFiles: () => Promise<void> = async () => {
-        try {
-            const files = await blossomService.readFiles();
-
-            if (files.length > 0) {
-                setMyFiles(files);
-                setOpenModalFileList(true);
-            }
-        } catch (error: any) {
-            alert(`loading files: ${error.message}`);
-        }
-    };
-
     const saveNewFile: () => Promise<void> = async () => {
         try {
             const content = JSON.stringify(
@@ -215,38 +197,8 @@ function Editor(): React.ReactElement {
         }
     };
 
-    const saveOpenFile: () => Promise<void> = async () => {
-        try {
-            const content = JSON.stringify(
-                editorValue.map((child) => ({ ...child, mode: selectedMode }))
-            );
-            await blossomService.updateFile(fileName, content);
-        } catch (error: any) {
-            alert(`saving file: ${error.message}`);
-        }
-    };
-
-    const onNewFile: React.MouseEventHandler<HTMLButtonElement> = () => {
-        setFileName('');
-        setMyFiles([]);
-        editor.children = INITIAL_VALUE;
-        setEditorValue([]);
-    };
-
-    const onSaveFile: React.MouseEventHandler<HTMLButtonElement> = () => {
-        if (fileName.trim() === '') {
-            setOpenModalName(true);
-        } else {
-            saveOpenFile();
-        }
-    };
-
     const onSaveNewFile: React.MouseEventHandler<HTMLButtonElement> = () => {
         saveNewFile();
-    };
-
-    const onOpenFiles: React.MouseEventHandler<HTMLButtonElement> = () => {
-        openFiles();
     };
 
     const onOpenFile: (selectedFileName: string) => Promise<void> = async (
@@ -328,13 +280,6 @@ function Editor(): React.ReactElement {
                         setEditorValue(value);
                     }
                 }}>
-                <Toolbar
-                    selectedMode={selectedMode}
-                    setSelectedMode={setSelectedMode}
-                    onNewFile={onNewFile}
-                    onOpenFiles={onOpenFiles}
-                    onSave={onSaveFile}
-                />
                 <Editable
                     onDOMBeforeInput={
                         selectedMode === MODE_TEXT.markdown

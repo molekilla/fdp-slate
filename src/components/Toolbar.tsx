@@ -28,35 +28,14 @@ const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
 function Toolbar({
     selectedMode,
-    setSelectedMode,
-    onNewFile,
-    onSave,
-    onOpenFiles
+    setSelectedMode
 }: {
     selectedMode: string;
     setSelectedMode: (value: string) => void;
-    onNewFile: React.MouseEventHandler<HTMLButtonElement>;
-    onSave: React.MouseEventHandler<HTMLButtonElement>;
-    onOpenFiles: React.MouseEventHandler<HTMLButtonElement>;
 }): React.ReactElement {
     const editor = useSlate();
     return (
         <div className="Toolbar">
-            <ToolbarButton
-                Icon={NoteAddOutlinedIcon}
-                text="New File"
-                onClick={onNewFile}
-            />
-            <ToolbarButton
-                Icon={FolderOpenOutlinedIcon}
-                text="Open"
-                onClick={onOpenFiles}
-            />
-            <ToolbarButton
-                Icon={SaveOutlinedIcon}
-                text="Save"
-                onClick={onSave}
-            />
             {selectedMode === MODE_TEXT.richText && (
                 <>
                     <div className="Divider" />
