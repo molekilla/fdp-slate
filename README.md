@@ -7,6 +7,11 @@ Slate editor FDP integration
 
 This is a sample project which showcases `fdp-storage` and Blossom extension with Slate React editor component.
 
+## Branches
+
+- `main`: Contains Slate integration with `Blossom` and `fdp-storage`.
+- `crdt-slate`: Contains Slate integration with `fdp-slate-crdt-server` for Yjs CRDT applications.
+
 ## Requirements
 
 -   [fdp-play](https://github.com/fairDataSociety/fdp-play)
@@ -38,6 +43,10 @@ https://user-images.githubusercontent.com/11984246/232552275-2c046398-e62d-41a1-
 
 ## Component Diagram
 ![Screenshot from 2023-04-18 09-01-53](https://user-images.githubusercontent.com/1248071/232802205-6c1798ee-6fa6-4083-923b-a5766f56537c.png)
+
+## Maintainer
+
+@molekilla
 
 ## License
 
