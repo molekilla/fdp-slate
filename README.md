@@ -2,6 +2,10 @@
 
 Slate editor FDP integration
 
+## Demo
+
+> https://api.gateway.ethswarm.org/bzz/18c68e315b90d1b6ba31ba89c236a6eb79488d29983a13701f4971bc82b9dbd9/
+
 
 ## Description
 
